@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => {
     if(!response){
         res.writeHead(404,{
             "content-type": "aplication/json",
-        });
+        }); 
 
         return res.end(
             JSON.stringify({
