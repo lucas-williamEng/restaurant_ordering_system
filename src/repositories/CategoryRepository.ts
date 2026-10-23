@@ -1,5 +1,5 @@
 import supabase from "../config/supabase.js";
-import { Category } from "../model/Category.js";
+import type { Category } from "../model/Category.js";
 
 async function findAll() {
     const { data, error } = await supabase
@@ -13,7 +13,7 @@ async function findAll() {
     return data;
 }
 
-async function findById(id: string): Promise<Category> {
+async function findById(id: string) {
     const { data, error } = await supabase
         .from("categories")
         .select("*")
@@ -24,26 +24,13 @@ async function findById(id: string): Promise<Category> {
         throw error;
     }
 
-    return Category.restore(
-        data.id,
-        data.name,
-        data.display_order,
-        data.activate,
-        data.description,
-        data.icon,
-    )
+    return data;
 }
 
 async function create(category: Category) {
     const { data, error } = await supabase
         .from("categories")
-        .insert({
-            name: category.getName(),
-            description: category.getDescription(),
-            icon: category.getIcon(),
-            display_order: category.getDisplayOrder(),
-            active: category.isActive(),
-        })
+        .insert(category)
         .select()
         .single();
 
@@ -54,22 +41,10 @@ async function create(category: Category) {
     return data;
 }
 
-async function update(category: Category) {
-    const id = category.getId;
-
-    if (!id) {
-        throw new Error("Categoria sem ID não pode ser atualizada.")
-    }
-
+async function update(id: string, category: Category) {
     const { data, error } = await supabase
         .from("categories")
-        .update({
-            name: category.getName(),
-            description: category.getDescription(),
-            icon: category.getIcon(),
-            display_order: category.getDisplayOrder(),
-            active: category.isActive(),
-        })
+        .update(category)
         .eq("id", id)
         .select()
         .single();
